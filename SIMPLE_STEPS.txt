@@ -1,0 +1,63 @@
+==========================================
+  HOW TO PUBLISH YOUR VYBE APP
+==========================================
+
+OPTION 1: Quick Share (Easiest!)
+---------------------------------
+1. Open Command Prompt
+
+2. Run:
+   cd C:\Users\prach\Vybe\frontend
+   npx expo start --tunnel
+
+3. Wait for QR code to appear
+
+4. The tunnel URL will work from ANYWHERE
+   (not just your network!)
+
+5. Scan QR code with Expo Go on your phone
+
+
+OPTION 2: Publish to Expo (Permanent Link)
+-------------------------------------------
+You need an Expo account first!
+
+1. Create account at: https://expo.dev/signup
+
+2. Open Command Prompt
+
+3. Login:
+   cd C:\Users\prach\Vybe\frontend
+   npx expo login
+   (Enter your email and password)
+
+4. Register the app:
+   npx eas build:configure
+
+5. Create update:
+   npx eas update --branch production --message "Initial Release"
+
+6. You'll get a permanent link to share!
+
+
+OPTION 3: Build APK for Android
+--------------------------------
+1. Login to Expo (see above)
+
+2. Build APK:
+   npx eas build --platform android --profile preview
+
+3. Wait 10-15 minutes
+
+4. Download APK and install on your phone
+
+
+==========================================
+  RECOMMENDED: Try Option 1 First!
+==========================================
+
+The tunnel mode should work even with network issues.
+
+If tunnel doesn't work, try Option 2 to publish permanently.
+
+==========================================
