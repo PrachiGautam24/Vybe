@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,19 @@ import { THEME } from '../constants/theme';
 import CircularProgress from '../components/CircularProgress';
 import FriendCard from '../components/FriendCard';
 import ChallengeCard from '../components/ChallengeCard';
+import BottomNavBar from '../components/BottomNavBar';
+import ProfileDrawer from '../components/ProfileDrawer';
 
 export default function DashboardScreen({ navigation }) {
+  const [profileVisible, setProfileVisible] = useState(false);
   const userName = 'Divyansh';
+  const userData = {
+    name: userName,
+    level: 6,
+    xp: 1820,
+    badges: 12,
+    streak: 17,
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -24,11 +34,20 @@ export default function DashboardScreen({ navigation }) {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.logo}>VYBE</Text>
+            <Text style={styles.subtitle}>Good morning,{'\n'}Dashboard</Text>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Text style={styles.notificationIcon}>🔔</Text>
-            <View style={styles.notificationDot} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.notificationButton}>
+              <Text style={styles.notificationIcon}>🔔</Text>
+              <View style={styles.notificationDot} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.profileButton}
+              onPress={() => setProfileVisible(true)}
+            >
+              <Text style={styles.profileAvatar}>👤</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Greeting with Streak Badge */}
@@ -193,9 +212,19 @@ export default function DashboardScreen({ navigation }) {
           />
         </ScrollView>
 
-        {/* Bottom Spacing */}
+        {/* Bottom Spacing for Nav Bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
+
+      {/* Bottom Navigation */}
+      <BottomNavBar navigation={navigation} activeTab="Home" />
+
+      {/* Profile Drawer */}
+      <ProfileDrawer 
+        visible={profileVisible}
+        onClose={() => setProfileVisible(false)}
+        userData={userData}
+      />
     </SafeAreaView>
   );
 }
@@ -214,20 +243,30 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: THEME.spacing.base,
     paddingTop: THEME.spacing.md,
     paddingBottom: THEME.spacing.base,
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flex: 1,
   },
   logo: {
     fontSize: 28,
     fontWeight: 'bold',
     color: THEME.colors.textPrimary,
     letterSpacing: 2,
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: THEME.colors.textSecondary,
+    lineHeight: 18,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   notificationButton: {
     position: 'relative',
@@ -249,6 +288,23 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: THEME.colors.primary,
+  },
+  profileButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: THEME.colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: THEME.colors.primary,
+    shadowColor: THEME.colors.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  profileAvatar: {
+    fontSize: 22,
   },
 
   // Greeting with inline Streak Badge
@@ -438,6 +494,6 @@ const styles = StyleSheet.create({
 
   // Bottom Spacing
   bottomSpacing: {
-    height: 40,
+    height: 100,
   },
 });
