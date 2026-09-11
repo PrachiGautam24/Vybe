@@ -37,7 +37,10 @@ export default function DashboardScreen({ navigation }) {
             <Text style={styles.subtitle}>Good morning,{'\n'}Dashboard</Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.notificationButton}>
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
               <Text style={styles.notificationIcon}>🔔</Text>
               <View style={styles.notificationDot} />
             </TouchableOpacity>
@@ -70,7 +73,10 @@ export default function DashboardScreen({ navigation }) {
 
         {/* Stats Circles */}
         <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
+          <TouchableOpacity 
+            style={styles.statItem}
+            onPress={() => navigation.navigate('Missions')}
+          >
             <CircularProgress
               size={110}
               strokeWidth={8}
@@ -81,7 +87,7 @@ export default function DashboardScreen({ navigation }) {
               label="Steps"
               icon="👣"
             />
-          </View>
+          </TouchableOpacity>
           <View style={styles.statItem}>
             <CircularProgress
               size={110}
@@ -111,7 +117,7 @@ export default function DashboardScreen({ navigation }) {
         {/* Friends Section */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Friends</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Community', { tab: 'Friends' })}>
             <Text style={styles.seeAll}>See All ›</Text>
           </TouchableOpacity>
         </View>
@@ -126,12 +132,14 @@ export default function DashboardScreen({ navigation }) {
             status="Online"
             avatar="👤"
             borderColor="#4FFFB0"
+            onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
           />
           <FriendCard
             name="Hariom"
             status="Offline • 2h ago"
             avatar="👤"
             borderColor="#FFB84D"
+            onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
           />
         </ScrollView>
 
@@ -144,13 +152,13 @@ export default function DashboardScreen({ navigation }) {
           time="Sat, 14 Sep 6:30 AM"
           participants="30 people joining"
           buttonText="Join"
-          onPress={() => console.log('Join community run')}
+          onPress={() => navigation.navigate('Community', { tab: 'Events' })}
         />
 
         {/* Today's Challenge */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Today's Challenge</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Missions')}>
             <Text style={styles.seeAll}>See All ›</Text>
           </TouchableOpacity>
         </View>
@@ -163,7 +171,10 @@ export default function DashboardScreen({ navigation }) {
             <Text style={styles.todayChallengeTitle}>10K Steps</Text>
             <Text style={styles.todayChallengeSubtitle}>3/3 friends joined</Text>
           </View>
-          <TouchableOpacity style={styles.startButton}>
+          <TouchableOpacity 
+            style={styles.startButton}
+            onPress={() => navigation.navigate('Missions')}
+          >
             <Text style={styles.startButtonText}>Start</Text>
             <Text style={styles.startButtonArrow}>›</Text>
           </TouchableOpacity>
@@ -180,7 +191,7 @@ export default function DashboardScreen({ navigation }) {
         {/* Upcoming Challenges */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Upcoming Challenges</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Battles')}>
             <Text style={styles.seeAll}>See All ›</Text>
           </TouchableOpacity>
         </View>
@@ -194,21 +205,21 @@ export default function DashboardScreen({ navigation }) {
             title="Play 1 Hour"
             subtitle="of Basketball"
             reward="+200 XP"
-            onPress={() => console.log('Basketball challenge')}
+            onPress={() => navigation.navigate('Battles')}
           />
           <ChallengeCard
             icon="🚴"
             title="Cycle 15 km"
             subtitle=""
             reward="+300 XP"
-            onPress={() => console.log('Cycling challenge')}
+            onPress={() => navigation.navigate('Battles')}
           />
           <ChallengeCard
             icon="🏊"
             title="Swim 500m"
             subtitle=""
             reward="+250 XP"
-            onPress={() => console.log('Swimming challenge')}
+            onPress={() => navigation.navigate('Battles')}
           />
         </ScrollView>
 

@@ -6,6 +6,7 @@ import MissionsScreen from '../screens/MissionsScreen';
 import BattlesScreen from '../screens/BattlesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import RewardsScreen from '../screens/RewardsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 import { THEME } from '../constants/theme';
 
 const Stack = createNativeStackNavigator();
@@ -41,6 +42,10 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="Rewards" 
           component={RewardsScreen}
+        />
+        <Stack.Screen 
+          name="Notifications" 
+          component={NotificationsScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -3,115 +3,144 @@ import {
   View,
   Text,
   StyleSheet,
-  Modal,
   TouchableOpacity,
-  ScrollView,
-  Animated,
+  Modal,
+  Switch,
 } from 'react-native';
 import { THEME } from '../constants/theme';
 
-export default function ProfileDrawer({ visible, onClose, userData }) {
+export default function ProfileDrawer({ visible, onClose, navigation }) {
+  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
+
+  const userLevel = 6;
+  const levelTitle = 'Fitness Pro';
+  const currentXP = 1820;
+
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={true}
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backdrop} onPress={onClose} />
+      <TouchableOpacity 
+        style={styles.overlay} 
+        activeOpacity={1} 
+        onPress={onClose}
+      >
         <View style={styles.drawer}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeIcon}>✕</Text>
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Profile</Text>
-          </View>
+          <TouchableOpacity activeOpacity={1}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.title}>Profile Drawer</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
 
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            {/* Profile Avatar and Level */}
+            {/* Profile Section */}
             <View style={styles.profileSection}>
               <View style={styles.avatarContainer}>
-                <Text style={styles.avatar}>👤</Text>
-              </View>
-              <Text style={styles.userName}>{userData?.name || 'Divyansh'}</Text>
-              <View style={styles.levelBadge}>
-                <Text style={styles.levelText}>Level 6</Text>
-                <Text style={styles.levelSubtext}>Fitness Pro</Text>
-              </View>
-            </View>
-
-            {/* XP Progress */}
-            <View style={styles.xpSection}>
-              <View style={styles.xpRow}>
-                <Text style={styles.xpIcon}>⚡</Text>
-                <Text style={styles.xpText}>1,820 XP</Text>
-              </View>
-              <View style={styles.xpBar}>
-                <View style={[styles.xpFill, { width: '72%' }]} />
-              </View>
-              <Text style={styles.xpSubtext}>180 XP to next level</Text>
-            </View>
-
-            {/* Stats Grid */}
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statIcon}>🏆</Text>
-                <Text style={styles.statValue}>12</Text>
-                <Text style={styles.statLabel}>Badges Earned</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statIcon}>🛡️</Text>
-                <Text style={styles.statValue}>17</Text>
-                <Text style={styles.statLabel}>Streak Shield</Text>
-              </View>
-            </View>
-
-            {/* Difficulty Level */}
-            <View style={styles.menuItem}>
-              <Text style={styles.menuIcon}>🎯</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuLabel}>Difficulty</Text>
-                <Text style={styles.menuValue}>Intermediate</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </View>
-
-            {/* Notifications Toggle */}
-            <View style={styles.menuItem}>
-              <Text style={styles.menuIcon}>🔔</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuLabel}>Notifications</Text>
-              </View>
-              <View style={styles.toggleContainer}>
-                <View style={[styles.toggle, styles.toggleActive]}>
-                  <View style={styles.toggleThumb} />
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>👤</Text>
+                </View>
+                <View style={styles.levelBadge}>
+                  <Text style={styles.levelBadgeText}>6</Text>
                 </View>
               </View>
+              <View style={styles.profileInfo}>
+                <Text style={styles.levelText}>Level {userLevel}</Text>
+                <Text style={styles.levelTitle}>{levelTitle}</Text>
+              </View>
             </View>
 
-            {/* Leaderboard Button */}
-            <TouchableOpacity style={styles.leaderboardButton}>
-              <Text style={styles.leaderboardIcon}>🏆</Text>
-              <Text style={styles.leaderboardText}>View Leaderboards</Text>
-              <Text style={styles.leaderboardArrow}>›</Text>
+            {/* XP Section */}
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                onClose();
+                navigation.navigate('Rewards');
+              }}
+            >
+              <Text style={styles.menuIcon}>💎</Text>
+              <Text style={styles.menuText}>{currentXP.toLocaleString()} XP</Text>
+              <Text style={styles.menuArrow}>›</Text>
             </TouchableOpacity>
 
-            {/* Leaderboard Options */}
-            <View style={styles.leaderboardOptions}>
-              <TouchableOpacity style={styles.leaderboardOption}>
-                <Text style={styles.leaderboardOptionIcon}>👥</Text>
-                <Text style={styles.leaderboardOptionText}>Team vs Team</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.leaderboardOption}>
-                <Text style={styles.leaderboardOptionIcon}>⚡</Text>
-                <Text style={styles.leaderboardOptionText}>XP Leaderboards</Text>
-              </TouchableOpacity>
+            {/* Badges Earned */}
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                onClose();
+                navigation.navigate('Rewards', { tab: 'My Rewards' });
+              }}
+            >
+              <Text style={styles.menuIcon}>🏆</Text>
+              <Text style={styles.menuText}>Badges Earned</Text>
+              <View style={styles.badgeCount}>
+                <Text style={styles.badgeCountText}>6</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Streak Shield */}
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                onClose();
+                // navigation.navigate('Streak'); // Will implement later
+              }}
+            >
+              <Text style={styles.menuIcon}>🛡️</Text>
+              <Text style={styles.menuText}>Streak Shield</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            {/* Difficulty */}
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>🎯</Text>
+              <Text style={styles.menuText}>Difficulty: Intermediate</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            {/* Notifications */}
+            <View style={styles.menuItem}>
+              <Text style={styles.menuIcon}>🔔</Text>
+              <Text style={styles.menuText}>Notifications</Text>
+              <Switch
+                value={notificationsEnabled}
+                onValueChange={setNotificationsEnabled}
+                trackColor={{ false: '#3A3A3A', true: '#4FFFB0' }}
+                thumbColor={notificationsEnabled ? '#FFFFFF' : '#A0A0A0'}
+              />
             </View>
-          </ScrollView>
+
+            {/* Settings */}
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                onClose();
+                // navigation.navigate('Settings');
+              }}
+            >
+              <Text style={styles.menuIcon}>⚙️</Text>
+              <Text style={styles.menuText}>Settings</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            {/* Logout */}
+            <TouchableOpacity 
+              style={[styles.menuItem, styles.logoutItem]}
+              onPress={() => {
+                onClose();
+                // Handle logout
+              }}
+            >
+              <Text style={styles.menuIcon}>🚪</Text>
+              <Text style={[styles.menuText, styles.logoutText]}>Logout</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 }
@@ -121,256 +150,146 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
   },
   drawer: {
-    width: '85%',
-    height: '100%',
-    backgroundColor: THEME.colors.background,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#1A1A1A',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: 40,
+    borderWidth: 2,
+    borderColor: 'rgba(91, 159, 255, 0.3)',
+    shadowColor: '#5B9FFF',
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 50,
-    paddingHorizontal: THEME.spacing.base,
-    paddingBottom: THEME.spacing.base,
+    padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: THEME.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: THEME.spacing.md,
-  },
-  closeIcon: {
+  title: {
     fontSize: 20,
-    color: THEME.colors.textPrimary,
-  },
-  headerTitle: {
-    fontSize: 24,
     fontWeight: 'bold',
-    color: THEME.colors.textPrimary,
+    color: '#FFFFFF',
   },
-  content: {
-    flex: 1,
-    padding: THEME.spacing.base,
-  },
-  profileSection: {
-    alignItems: 'center',
-    marginBottom: THEME.spacing.xl,
-  },
-  avatarContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: THEME.colors.surface,
-    borderWidth: 3,
-    borderColor: THEME.colors.primary,
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: THEME.spacing.md,
-    shadowColor: THEME.colors.primary,
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
   },
-  avatar: {
-    fontSize: 48,
+  closeButtonText: {
+    fontSize: 20,
+    color: '#FFFFFF',
   },
-  userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: THEME.colors.textPrimary,
-    marginBottom: THEME.spacing.sm,
-  },
-  levelBadge: {
-    backgroundColor: THEME.colors.surface,
-    paddingHorizontal: THEME.spacing.base,
-    paddingVertical: THEME.spacing.sm,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(79, 255, 176, 0.3)',
-  },
-  levelText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: THEME.colors.primary,
-    textAlign: 'center',
-  },
-  levelSubtext: {
-    fontSize: 12,
-    color: THEME.colors.textSecondary,
-    textAlign: 'center',
-  },
-  xpSection: {
-    backgroundColor: THEME.colors.surface,
-    padding: THEME.spacing.base,
+
+  // Profile
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(91, 159, 255, 0.1)',
+    marginHorizontal: 20,
+    marginTop: 16,
     borderRadius: 16,
-    marginBottom: THEME.spacing.base,
     borderWidth: 1,
     borderColor: 'rgba(91, 159, 255, 0.3)',
   },
-  xpRow: {
-    flexDirection: 'row',
+  avatarContainer: {
+    position: 'relative',
+    marginRight: 16,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#2A2A2A',
     alignItems: 'center',
-    marginBottom: THEME.spacing.sm,
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#5B9FFF',
   },
-  xpIcon: {
-    fontSize: 24,
-    marginRight: THEME.spacing.sm,
+  avatarText: {
+    fontSize: 40,
   },
-  xpText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: THEME.colors.textPrimary,
-  },
-  xpBar: {
-    height: 8,
-    backgroundColor: 'rgba(91, 159, 255, 0.2)',
-    borderRadius: 4,
-    marginBottom: THEME.spacing.xs,
-    overflow: 'hidden',
-  },
-  xpFill: {
-    height: '100%',
-    backgroundColor: THEME.colors.secondary,
-    borderRadius: 4,
-  },
-  xpSubtext: {
-    fontSize: 12,
-    color: THEME.colors.textSecondary,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: THEME.spacing.md,
-    marginBottom: THEME.spacing.base,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: THEME.colors.surface,
-    padding: THEME.spacing.base,
+  levelBadge: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    width: 32,
+    height: 32,
     borderRadius: 16,
+    backgroundColor: '#FFB84D',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 184, 77, 0.3)',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#1A1A1A',
   },
-  statIcon: {
-    fontSize: 32,
-    marginBottom: THEME.spacing.xs,
+  levelBadgeText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
   },
-  statValue: {
+  profileInfo: {
+    flex: 1,
+  },
+  levelText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: THEME.colors.textPrimary,
-    marginBottom: THEME.spacing.xs,
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 11,
-    color: THEME.colors.textSecondary,
-    textAlign: 'center',
+  levelTitle: {
+    fontSize: 16,
+    color: '#A0A0A0',
   },
+
+  // Menu Items
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.colors.surface,
-    padding: THEME.spacing.base,
-    borderRadius: 12,
-    marginBottom: THEME.spacing.sm,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   menuIcon: {
     fontSize: 24,
-    marginRight: THEME.spacing.md,
+    marginRight: 16,
+    width: 32,
   },
-  menuContent: {
+  menuText: {
     flex: 1,
-  },
-  menuLabel: {
     fontSize: 16,
-    color: THEME.colors.textPrimary,
+    color: '#FFFFFF',
     fontWeight: '500',
-  },
-  menuValue: {
-    fontSize: 14,
-    color: THEME.colors.textSecondary,
-    marginTop: 2,
   },
   menuArrow: {
     fontSize: 24,
-    color: THEME.colors.textSecondary,
+    color: '#A0A0A0',
   },
-  toggleContainer: {
-    marginLeft: THEME.spacing.sm,
-  },
-  toggle: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 2,
-    justifyContent: 'center',
-  },
-  toggleActive: {
-    backgroundColor: THEME.colors.primary,
-    alignItems: 'flex-end',
-  },
-  toggleThumb: {
-    width: 24,
-    height: 24,
+  badgeCount: {
+    backgroundColor: '#FFB84D',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: THEME.colors.background,
   },
-  leaderboardButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(79, 255, 176, 0.15)',
-    padding: THEME.spacing.base,
-    borderRadius: 12,
-    marginTop: THEME.spacing.base,
-    marginBottom: THEME.spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(79, 255, 176, 0.3)',
+  badgeCountText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
   },
-  leaderboardIcon: {
-    fontSize: 24,
-    marginRight: THEME.spacing.md,
+  logoutItem: {
+    marginTop: 8,
+    borderBottomWidth: 0,
   },
-  leaderboardText: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.colors.primary,
-  },
-  leaderboardArrow: {
-    fontSize: 24,
-    color: THEME.colors.primary,
-  },
-  leaderboardOptions: {
-    marginBottom: THEME.spacing.xl,
-  },
-  leaderboardOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.colors.surface,
-    padding: THEME.spacing.base,
-    borderRadius: 12,
-    marginBottom: THEME.spacing.sm,
-  },
-  leaderboardOptionIcon: {
-    fontSize: 20,
-    marginRight: THEME.spacing.md,
-  },
-  leaderboardOptionText: {
-    fontSize: 15,
-    color: THEME.colors.textPrimary,
-    fontWeight: '500',
+  logoutText: {
+    color: '#FF3B30',
   },
 });
