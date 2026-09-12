@@ -152,7 +152,7 @@ export default function DashboardScreen({ navigation }) {
             contentContainerStyle={styles.horizontalScrollContent}
           >
             <FriendCard
-              name="Sehaj"
+              name="Divyansh"
               status="Online"
               avatar="👤"
               borderColor="#4FFFB0"
