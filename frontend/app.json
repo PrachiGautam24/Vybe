@@ -6,11 +6,15 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
+    },
+    "web": {
+      "favicon": "./assets/icon.png",
+      "bundler": "metro"
     },
     "ios": {
       "supportsTablet": true,

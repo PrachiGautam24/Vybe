@@ -160,18 +160,21 @@ export default function NotificationsScreen({ navigation }) {
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: THEME.colors.background,
-  },
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.background,
+  },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
   },
   
   // Header
