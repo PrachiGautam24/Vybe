@@ -382,7 +382,7 @@ export default function RewardsScreen({ navigation, route }) {
                       <Text style={styles.unlockPremiumSubtitle}>
                         Get 2× rewards, exclusive badges & more!
                       </Text>
-                      <Text style={styles.unlockPremiumPrice}>Starting at ₹144/month</Text>
+                      <Text style={styles.unlockPremiumPrice}>Try for ₹49/month • Starting at ₹144/month</Text>
                     </View>
                   </View>
                   <View style={styles.unlockPremiumRight}>
@@ -430,11 +430,11 @@ export default function RewardsScreen({ navigation, route }) {
       </View>
 
       {/* Tab Content */}
-      {activeTab === 'Badges' && renderBadges()}
-      {activeTab === 'Store' && renderStore()}
-      {activeTab === 'History' && renderHistory()}
-
-      <View style={styles.bottomSpacing} />
+      <View style={styles.contentContainer}>
+        {activeTab === 'Badges' && renderBadges()}
+        {activeTab === 'Store' && renderStore()}
+        {activeTab === 'History' && renderHistory()}
+      </View>
         </SafeAreaView>
 
       {/* Premium Subscription Modal */}
@@ -534,6 +534,33 @@ export default function RewardsScreen({ navigation, route }) {
                 {/* Pricing Plans */}
                 <View style={styles.pricingContainer}>
                   <Text style={styles.pricingTitle}>Choose Your Plan</Text>
+
+                  {/* Trial Plan - New Users */}
+                  <View style={[styles.pricingCard, styles.pricingCardTrial]}>
+                    <View style={styles.trialBadge}>
+                      <Text style={styles.trialBadgeText}>🎉 NEW USER TRIAL</Text>
+                    </View>
+                    <View style={styles.pricingHeader}>
+                      <View style={styles.pricingInfoColumn}>
+                        <Text style={styles.pricingName}>Trial</Text>
+                        <Text style={styles.pricingDescription}>1 month access</Text>
+                      </View>
+                      <View style={styles.pricingPriceContainer}>
+                        <Text style={styles.pricingPriceOld}>₹144</Text>
+                        <Text style={styles.pricingPrice}>₹49</Text>
+                        <Text style={styles.pricingPeriod}>/month</Text>
+                      </View>
+                    </View>
+                    <View style={styles.savingsBadge}>
+                      <Text style={styles.savingsBadgeText}>🔥 Save 66% • New users only</Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.planPayButton, styles.planPayButtonTrial]}
+                      onPress={activatePremium}
+                    >
+                      <Text style={styles.planPayButtonText}>Start Trial for ₹49</Text>
+                    </TouchableOpacity>
+                  </View>
 
                   {/* Monthly Plan */}
                   <View style={styles.pricingCard}>
@@ -689,6 +716,7 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: 100, // Space for bottom nav
   },
 
   // XP Balance Card
@@ -1179,8 +1207,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  bottomSpacing: {
-    height: 80,
+  contentContainer: {
+    flex: 1,
   },
 
   // Premium styles
@@ -1437,6 +1465,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: 'rgba(255, 215, 0, 0.1)',
   },
+  pricingCardTrial: {
+    borderColor: '#4FFFB0',
+    borderWidth: 2,
+    backgroundColor: 'rgba(79, 255, 176, 0.1)',
+  },
   popularBadge: {
     position: 'absolute',
     top: -10,
@@ -1462,6 +1495,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   bestValueBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+    letterSpacing: 1,
+  },
+  trialBadge: {
+    position: 'absolute',
+    top: -10,
+    alignSelf: 'center',
+    backgroundColor: '#4FFFB0',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  trialBadgeText: {
     fontSize: 10,
     fontWeight: 'bold',
     color: '#000',
@@ -1525,6 +1573,9 @@ const styles = StyleSheet.create({
   },
   planPayButtonBest: {
     backgroundColor: '#FFD700',
+  },
+  planPayButtonTrial: {
+    backgroundColor: '#4FFFB0',
   },
   planPayButtonText: {
     fontSize: 15,

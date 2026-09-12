@@ -211,7 +211,7 @@ export default function CommunityScreen({ navigation, route }) {
   const friends = [
     {
       id: 1,
-      name: 'Sehaj',
+      name: 'Divyansh',
       status: 'Online',
       avatar: '👤',
       level: 8,
