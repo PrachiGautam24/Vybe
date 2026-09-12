@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 import BottomNavBar from '../components/BottomNavBar';
+import VybeLogo from '../components/VybeLogo';
 
 export default function BattlesScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Ongoing');
@@ -80,7 +81,7 @@ export default function BattlesScreen({ navigation }) {
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.logo}>VYBE</Text>
+          <VybeLogo width={80} height={28} />
           <TouchableOpacity 
             style={styles.profileButton}
             onPress={() => navigation.navigate('Dashboard')}

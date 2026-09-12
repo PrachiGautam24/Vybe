@@ -16,12 +16,13 @@ import FriendCard from '../components/FriendCard';
 import ChallengeCard from '../components/ChallengeCard';
 import BottomNavBar from '../components/BottomNavBar';
 import ProfileDrawer from '../components/ProfileDrawer';
+import VybeLogo from '../components/VybeLogo';
 
 const { width } = Dimensions.get('window');
 
 export default function DashboardScreen({ navigation }) {
   const [profileVisible, setProfileVisible] = useState(false);
-  const userName = 'Divyansh';
+  const userName = 'Sehaj';
   const userData = {
     name: userName,
     level: 6,
@@ -42,14 +43,7 @@ export default function DashboardScreen({ navigation }) {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <LinearGradient
-                colors={['#5B9FFF', '#00D9FF']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.logoGradient}
-              >
-                <Text style={styles.logo}>VYBE</Text>
-              </LinearGradient>
+              <VybeLogo width={100} height={32} />
             </View>
             <View style={styles.headerRight}>
               <TouchableOpacity 
@@ -236,14 +230,12 @@ export default function DashboardScreen({ navigation }) {
             <ChallengeCard
               icon="🚴"
               title="Cycle 15 km"
-              subtitle=""
               reward="+300 XP"
               onPress={() => navigation.navigate('Battles')}
             />
             <ChallengeCard
               icon="🏊"
               title="Swim 500m"
-              subtitle=""
               reward="+250 XP"
               onPress={() => navigation.navigate('Battles')}
             />

@@ -11,11 +11,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 import BottomNavBar from '../components/BottomNavBar';
+import VybeLogo from '../components/VybeLogo';
 
 export default function MissionsScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Daily');
-
-  const dailyMissions = [
+  
+  // State for mission statuses
+  const [dailyMissions, setDailyMissions] = useState([
     {
       id: 1,
       title: 'Walk 7 km',
@@ -42,9 +44,9 @@ export default function MissionsScreen({ navigation }) {
       status: 'completed',
       earnedXp: 200,
     },
-  ];
+  ]);
 
-  const weeklyMissions = [
+  const [weeklyMissions, setWeeklyMissions] = useState([
     {
       id: 1,
       title: 'Run 30 km this week',
@@ -80,9 +82,9 @@ export default function MissionsScreen({ navigation }) {
       status: 'completed',
       earnedXp: 1000,
     },
-  ];
+  ]);
 
-  const specialMissions = [
+  const [specialMissions, setSpecialMissions] = useState([
     {
       id: 1,
       title: 'Weekend 10K Run',
@@ -91,6 +93,7 @@ export default function MissionsScreen({ navigation }) {
       friendsJoined: 8,
       timeLeft: '2 Days Left',
       type: 'special',
+      status: 'not-joined',
     },
     {
       id: 2,
@@ -100,6 +103,7 @@ export default function MissionsScreen({ navigation }) {
       friendsJoined: 15,
       timeLeft: '1 Week Left',
       type: 'special',
+      status: 'not-joined',
     },
     {
       id: 3,
@@ -109,8 +113,9 @@ export default function MissionsScreen({ navigation }) {
       friendsJoined: 12,
       timeLeft: '3 Days Left',
       type: 'special',
+      status: 'not-joined',
     },
-  ];
+  ]);
 
   const recommendedMissions = [
     {
@@ -129,6 +134,46 @@ export default function MissionsScreen({ navigation }) {
     },
   ];
 
+  // Handler functions for mission status changes
+  const handleDailyMissionToggle = (missionId) => {
+    setDailyMissions(dailyMissions.map(mission => {
+      if (mission.id === missionId) {
+        if (mission.status === 'not-started') {
+          return { ...mission, status: 'in-progress', progress: 0 };
+        } else if (mission.status === 'in-progress') {
+          return { ...mission, status: 'completed', earnedXp: mission.xp, progress: 100 };
+        }
+      }
+      return mission;
+    }));
+  };
+
+  const handleWeeklyMissionToggle = (missionId) => {
+    setWeeklyMissions(weeklyMissions.map(mission => {
+      if (mission.id === missionId) {
+        if (mission.status === 'not-started') {
+          return { ...mission, status: 'in-progress', progress: 0 };
+        } else if (mission.status === 'in-progress') {
+          return { ...mission, status: 'completed', earnedXp: mission.xp, progress: 100 };
+        }
+      }
+      return mission;
+    }));
+  };
+
+  const handleSpecialMissionToggle = (missionId) => {
+    setSpecialMissions(specialMissions.map(mission => {
+      if (mission.id === missionId) {
+        return { 
+          ...mission, 
+          status: mission.status === 'joined' ? 'not-joined' : 'joined',
+          friendsJoined: mission.status === 'joined' ? mission.friendsJoined - 1 : mission.friendsJoined + 1
+        };
+      }
+      return mission;
+    }));
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -140,7 +185,7 @@ export default function MissionsScreen({ navigation }) {
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.logo}>VYBE</Text>
+          <VybeLogo width={80} height={28} />
           <View style={styles.headerRight}>
             <TouchableOpacity 
               style={styles.profileButton}
@@ -227,12 +272,18 @@ export default function MissionsScreen({ navigation }) {
                       <Text style={styles.earnedXpText}>⚡ {mission.earnedXp} XP</Text>
                     </View>
                   ) : mission.status === 'in-progress' ? (
-                    <TouchableOpacity style={styles.resumeButton}>
-                      <Text style={styles.resumeButtonText}>Resume</Text>
+                    <TouchableOpacity 
+                      style={styles.endButton}
+                      onPress={() => handleDailyMissionToggle(mission.id)}
+                    >
+                      <Text style={styles.endButtonText}>End Mission</Text>
                       <Text style={styles.timeLeftText}>⏱ Ends in {mission.timeLeft}</Text>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity style={styles.startButton}>
+                    <TouchableOpacity 
+                      style={styles.startButton}
+                      onPress={() => handleDailyMissionToggle(mission.id)}
+                    >
                       <Text style={styles.startButtonText}>Start</Text>
                       <Text style={styles.notStartedText}>Not Started • {mission.timeLeft}</Text>
                     </TouchableOpacity>
@@ -272,12 +323,18 @@ export default function MissionsScreen({ navigation }) {
                       <Text style={styles.earnedXpText}>⚡ {mission.earnedXp} XP</Text>
                     </View>
                   ) : mission.status === 'in-progress' ? (
-                    <TouchableOpacity style={styles.resumeButton}>
-                      <Text style={styles.resumeButtonText}>Resume</Text>
+                    <TouchableOpacity 
+                      style={styles.endButton}
+                      onPress={() => handleWeeklyMissionToggle(mission.id)}
+                    >
+                      <Text style={styles.endButtonText}>End Mission</Text>
                       <Text style={styles.timeLeftText}>⏱ Ends in {mission.timeLeft}</Text>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity style={styles.startButton}>
+                    <TouchableOpacity 
+                      style={styles.startButton}
+                      onPress={() => handleWeeklyMissionToggle(mission.id)}
+                    >
                       <Text style={styles.startButtonText}>Start</Text>
                       <Text style={styles.notStartedText}>Not Started • {mission.timeLeft}</Text>
                     </TouchableOpacity>
@@ -312,8 +369,19 @@ export default function MissionsScreen({ navigation }) {
                     </View>
                   </View>
                   <View style={styles.specialRight}>
-                    <TouchableOpacity style={styles.joinButton}>
-                      <Text style={styles.joinButtonText}>Join</Text>
+                    <TouchableOpacity 
+                      style={[
+                        styles.joinButton,
+                        mission.status === 'joined' && styles.joinedSpecialButton
+                      ]}
+                      onPress={() => handleSpecialMissionToggle(mission.id)}
+                    >
+                      <Text style={[
+                        styles.joinButtonText,
+                        mission.status === 'joined' && styles.joinedSpecialButtonText
+                      ]}>
+                        {mission.status === 'joined' ? '✓ Joined' : 'Join'}
+                      </Text>
                     </TouchableOpacity>
                     <Text style={styles.specialTimeLeft}>⏱ {mission.timeLeft}</Text>
                   </View>
@@ -525,17 +593,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginLeft: 12,
   },
-  resumeButton: {
-    backgroundColor: 'rgba(91, 159, 255, 0.15)',
+  endButton: {
+    backgroundColor: 'rgba(255, 107, 107, 0.15)',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(91, 159, 255, 0.3)',
+    borderColor: 'rgba(255, 107, 107, 0.3)',
     alignItems: 'center',
   },
-  resumeButtonText: {
-    color: '#5B9FFF',
+  endButtonText: {
+    color: '#FF6B6B',
     fontSize: 15,
     fontWeight: '600',
     marginBottom: 4,
@@ -660,6 +728,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  joinedSpecialButton: {
+    backgroundColor: 'rgba(79, 255, 176, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(79, 255, 176, 0.3)',
+  },
+  joinedSpecialButtonText: {
+    color: '#4FFFB0',
+  },
   specialTimeLeft: {
     fontSize: 12,
     color: '#A0A0A0',
@@ -745,3 +821,5 @@ const styles = StyleSheet.create({
     height: 20,
   },
 });
+
+
