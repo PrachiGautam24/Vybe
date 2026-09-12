@@ -75,7 +75,7 @@ export default function ChallengeCard({
       </View>
       <View style={styles.smallContent}>
         <Text style={styles.smallTitle}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        {subtitle && subtitle.trim() !== '' && <Text style={styles.subtitle}>{subtitle}</Text>}
         {reward && <Text style={styles.reward}>{reward}</Text>}
       </View>
       <Text style={styles.arrow}>→</Text>

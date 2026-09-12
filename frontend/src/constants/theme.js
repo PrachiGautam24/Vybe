@@ -8,8 +8,14 @@ export const THEME = {
     
     // Primary colors
     primary: '#4FFFB0', // Cyan/mint green
-    secondary: '#5B9FFF', // Blue
+    secondary: '#5B9FFF', // Blue (indigo for XP)
     accent: '#FFB84D', // Orange/gold
+    
+    // Premium colors (Gold theme)
+    premium: '#FFD700', // Gold
+    premiumLight: '#FFA500', // Light gold/orange
+    premiumDark: '#B8860B', // Dark goldenrod
+    premiumGlow: 'rgba(255, 215, 0, 0.3)',
     
     // Status colors
     success: '#4FFFB0',
@@ -23,14 +29,16 @@ export const THEME = {
     
     // Gradients
     gradientCyan: ['#4FFFB0', '#00D9A0'],
-    gradientBlue: ['#5B9FFF', '#4D7FFF'],
+    gradientBlue: ['#5B9FFF', '#4D7FFF'], // Indigo for XP
     gradientOrange: ['#FFB84D', '#FF9500'],
     gradientFire: ['#FF6B35', '#FF8E53'],
+    gradientPremium: ['#FFD700', '#FFA500', '#FFD700'], // Gold gradient for Premium
     
     // Circle progress colors
-    stepsColor: '#4FFFB0',
-    xpColor: '#5B9FFF',
+    stepsColor: '#4FFFB0', // Emerald for Points
+    xpColor: '#5B9FFF', // Indigo for XP
     coffeeColor: '#FFB84D',
+    premiumColor: '#FFD700', // Gold for Premium
   },
   
   fonts: {

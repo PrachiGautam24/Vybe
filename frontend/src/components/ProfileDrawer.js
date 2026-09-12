@@ -6,8 +6,15 @@ import {
   TouchableOpacity,
   Modal,
   Switch,
+  Dimensions,
+  Platform,
 } from 'react-native';
 import { THEME } from '../constants/theme';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const MOBILE_WIDTH = 430; // iPhone 14 Pro Max width
+const isWeb = Platform.OS === 'web';
+const drawerWidth = isWeb ? Math.min(SCREEN_WIDTH, MOBILE_WIDTH) : SCREEN_WIDTH;
 
 export default function ProfileDrawer({ visible, onClose, navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -59,7 +66,7 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
               style={styles.menuItem}
               onPress={() => {
                 onClose();
-                navigation.navigate('Rewards');
+                navigation.navigate('Rewards', { tab: 'Badges' });
               }}
             >
               <Text style={styles.menuIcon}>💎</Text>
@@ -72,7 +79,7 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
               style={styles.menuItem}
               onPress={() => {
                 onClose();
-                navigation.navigate('Rewards', { tab: 'My Rewards' });
+                navigation.navigate('Rewards', { tab: 'Badges' });
               }}
             >
               <Text style={styles.menuIcon}>🏆</Text>
@@ -156,6 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   drawer: {
     backgroundColor: '#1A1A1A',
@@ -168,6 +176,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 10,
+    width: drawerWidth,
+    maxWidth: MOBILE_WIDTH,
   },
   header: {
     flexDirection: 'row',

@@ -9,6 +9,8 @@ import RewardsScreen from '../screens/RewardsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import StreakScreen from '../screens/StreakScreen';
+import EventDetailScreen from '../screens/EventDetailScreen';
+import ChatScreen from '../screens/ChatScreen';
 import { THEME } from '../constants/theme';
 
 const Stack = createNativeStackNavigator();
@@ -56,6 +58,14 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="Streak" 
           component={StreakScreen}
+        />
+        <Stack.Screen 
+          name="EventDetail" 
+          component={EventDetailScreen}
+        />
+        <Stack.Screen 
+          name="Chat" 
+          component={ChatScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
