@@ -6,14 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  SafeAreaView,
+  Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 import CircularProgress from '../components/CircularProgress';
 import FriendCard from '../components/FriendCard';
 import ChallengeCard from '../components/ChallengeCard';
 import BottomNavBar from '../components/BottomNavBar';
 import ProfileDrawer from '../components/ProfileDrawer';
+
+const { width } = Dimensions.get('window');
 
 export default function DashboardScreen({ navigation }) {
   const [profileVisible, setProfileVisible] = useState(false);
@@ -27,339 +31,388 @@ export default function DashboardScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={THEME.colors.background} />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.logo}>VYBE</Text>
-            <Text style={styles.subtitle}>Good morning,{'\n'}Dashboard</Text>
-          </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity 
-              style={styles.notificationButton}
-              onPress={() => navigation.navigate('Notifications')}
-            >
-              <Text style={styles.notificationIcon}>🔔</Text>
-              <View style={styles.notificationDot} />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.profileButton}
-              onPress={() => setProfileVisible(true)}
-            >
-              <Text style={styles.profileAvatar}>👤</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Greeting with Streak Badge */}
-        <View style={styles.greetingContainer}>
-          <View style={styles.greetingRow}>
-            <View style={styles.greetingText}>
-              <Text style={styles.greeting}>Good morning,</Text>
-              <Text style={styles.userName}>{userName}</Text>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#000000', '#0A0A1F', '#000000']}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
+          <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+          
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <LinearGradient
+                colors={['#5B9FFF', '#00D9FF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.logoGradient}
+              >
+                <Text style={styles.logo}>VYBE</Text>
+              </LinearGradient>
             </View>
-            <TouchableOpacity style={styles.streakBadge}>
-              <Text style={styles.streakIcon}>🔥</Text>
-              <View style={styles.streakInfo}>
-                <Text style={styles.streakNumber}>17</Text>
-                <Text style={styles.streakLabel}>Day Streak</Text>
-              </View>
-              <Text style={styles.streakArrow}>›</Text>
-            </TouchableOpacity>
+            <View style={styles.headerRight}>
+              <TouchableOpacity 
+                style={styles.notificationButton}
+                onPress={() => navigation.navigate('Notifications')}
+              >
+                <Text style={styles.notificationIcon}>🔔</Text>
+                <View style={styles.notificationDot} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.profileButton}
+                onPress={() => setProfileVisible(true)}
+              >
+                <LinearGradient
+                  colors={['#4FFFB0', '#00B8A9']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.profileGradient}
+                >
+                  <Text style={styles.profileAvatar}>👤</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <ScrollView 
+            style={{flex: 1}} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+        {/* Greeting Section */}
+        <View style={styles.greetingSection}>
+          <View style={styles.greetingLeft}>
+            <Text style={styles.greeting}>Good morning,</Text>
+            <Text style={styles.userName}>{userName}</Text>
+          </View>
+          <TouchableOpacity style={styles.streakBadge}>
+            <Text style={styles.streakIcon}>🔥</Text>
+            <View>
+              <Text style={styles.streakNumber}>17</Text>
+              <Text style={styles.streakLabel}>Day Streak</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Stats Circles */}
-        <View style={styles.statsContainer}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.statsScrollContent}
+          style={styles.statsScroll}
+        >
           <TouchableOpacity 
             style={styles.statItem}
             onPress={() => navigation.navigate('Missions')}
           >
             <CircularProgress
-              size={110}
-              strokeWidth={8}
+              size={100}
+              strokeWidth={7}
               progress={84}
               color="#4FFFB0"
               value="8,432"
-              maxValue="10,000"
+              maxValue="10K"
               label="Steps"
               icon="👣"
             />
           </TouchableOpacity>
           <View style={styles.statItem}>
             <CircularProgress
-              size={110}
-              strokeWidth={8}
+              size={100}
+              strokeWidth={7}
               progress={62}
               color="#5B9FFF"
               value="1,240"
-              maxValue="2,000"
+              maxValue="2K"
               label="XP"
               icon="⚡"
             />
           </View>
           <View style={styles.statItem}>
             <CircularProgress
-              size={110}
-              strokeWidth={8}
+              size={100}
+              strokeWidth={7}
               progress={33}
               color="#FFB84D"
               value="1"
               maxValue="3"
-              label="Free Coffee"
+              label="Coffee"
               icon="☕"
             />
           </View>
-        </View>
-
-        {/* Friends Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Friends</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Community', { tab: 'Friends' })}>
-            <Text style={styles.seeAll}>See All ›</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.friendsList}
-          contentContainerStyle={styles.friendsListContent}
-        >
-          <FriendCard
-            name="Sehaj"
-            status="Online"
-            avatar="👤"
-            borderColor="#4FFFB0"
-            onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
-          />
-          <FriendCard
-            name="Hariom"
-            status="Offline • 2h ago"
-            avatar="👤"
-            borderColor="#FFB84D"
-            onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
-          />
         </ScrollView>
 
+        {/* Friends Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Friends</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Community', { tab: 'Friends' })}>
+              <Text style={styles.seeAll}>See All ›</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContent}
+          >
+            <FriendCard
+              name="Sehaj"
+              status="Online"
+              avatar="👤"
+              borderColor="#4FFFB0"
+              onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
+            />
+            <FriendCard
+              name="Hariom"
+              status="Offline • 2h"
+              avatar="👤"
+              borderColor="#FFB84D"
+              onPress={() => navigation.navigate('Community', { tab: 'Friends' })}
+            />
+          </ScrollView>
+        </View>
+
         {/* Community Run Card */}
-        <ChallengeCard
-          type="large"
-          badge="Community Run"
-          title="Run at Khan Market"
-          location="Khan Market, New Delhi"
-          time="Sat, 14 Sep 6:30 AM"
-          participants="30 people joining"
-          buttonText="Join"
-          onPress={() => navigation.navigate('Community', { tab: 'Events' })}
-        />
+        <View style={styles.section}>
+          <ChallengeCard
+            type="large"
+            badge="Community"
+            title="Run at Khan Market"
+            location="Khan Market, New Delhi"
+            time="Sat, 14 Sep • 6:30 AM"
+            participants="30 people"
+            buttonText="Join"
+            onPress={() => navigation.navigate('Community', { tab: 'Events' })}
+          />
+        </View>
 
         {/* Today's Challenge */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today's Challenge</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Missions')}>
-            <Text style={styles.seeAll}>See All ›</Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.todayChallengeContainer}>
-          <View style={styles.todayChallengeIcon}>
-            <Text style={styles.challengeFireIcon}>🔥</Text>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Today's Challenge</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Missions')}>
+              <Text style={styles.seeAll}>See All ›</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.todayChallengeContent}>
-            <Text style={styles.todayChallengeTitle}>10K Steps</Text>
-            <Text style={styles.todayChallengeSubtitle}>3/3 friends joined</Text>
-          </View>
+          
           <TouchableOpacity 
-            style={styles.startButton}
+            style={styles.todayChallenge}
             onPress={() => navigation.navigate('Missions')}
           >
-            <Text style={styles.startButtonText}>Start</Text>
-            <Text style={styles.startButtonArrow}>›</Text>
+            <View style={styles.challengeIcon}>
+              <Text style={styles.challengeEmoji}>🔥</Text>
+            </View>
+            <View style={styles.challengeInfo}>
+              <Text style={styles.challengeTitle}>10K Steps Challenge</Text>
+              <Text style={styles.challengeSubtitle}>3/3 friends joined</Text>
+            </View>
+            <View style={styles.startButton}>
+              <Text style={styles.startButtonText}>Start</Text>
+            </View>
           </TouchableOpacity>
-        </View>
-
-        {/* Progress Dots */}
-        <View style={styles.progressDots}>
-          <View style={[styles.dot, styles.dotActive]} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
         </View>
 
         {/* Upcoming Challenges */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Upcoming Challenges</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Battles')}>
-            <Text style={styles.seeAll}>See All ›</Text>
-          </TouchableOpacity>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Upcoming Challenges</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Battles')}>
+              <Text style={styles.seeAll}>See All ›</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContent}
+          >
+            <ChallengeCard
+              icon="🏀"
+              title="Play 1 Hour"
+              subtitle="Basketball"
+              reward="+200 XP"
+              onPress={() => navigation.navigate('Battles')}
+            />
+            <ChallengeCard
+              icon="🚴"
+              title="Cycle 15 km"
+              subtitle=""
+              reward="+300 XP"
+              onPress={() => navigation.navigate('Battles')}
+            />
+            <ChallengeCard
+              icon="🏊"
+              title="Swim 500m"
+              subtitle=""
+              reward="+250 XP"
+              onPress={() => navigation.navigate('Battles')}
+            />
+          </ScrollView>
         </View>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.upcomingChallengesContent}
-        >
-          <ChallengeCard
-            icon="🏀"
-            title="Play 1 Hour"
-            subtitle="of Basketball"
-            reward="+200 XP"
-            onPress={() => navigation.navigate('Battles')}
-          />
-          <ChallengeCard
-            icon="🚴"
-            title="Cycle 15 km"
-            subtitle=""
-            reward="+300 XP"
-            onPress={() => navigation.navigate('Battles')}
-          />
-          <ChallengeCard
-            icon="🏊"
-            title="Swim 500m"
-            subtitle=""
-            reward="+250 XP"
-            onPress={() => navigation.navigate('Battles')}
-          />
-        </ScrollView>
 
-        {/* Bottom Spacing for Nav Bar */}
+        {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <BottomNavBar navigation={navigation} activeTab="Home" />
+          {/* Bottom Navigation */}
+          <BottomNavBar navigation={navigation} activeTab="Home" />
 
-      {/* Profile Drawer */}
-      <ProfileDrawer 
-        visible={profileVisible}
-        onClose={() => setProfileVisible(false)}
-        userData={userData}
-      />
-    </SafeAreaView>
+          {/* Profile Drawer */}
+          <ProfileDrawer 
+            visible={profileVisible}
+            onClose={() => setProfileVisible(false)}
+            userData={userData}
+          />
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: THEME.colors.background,
-  },
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.background,
+  },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   
-  // Header
+  // Header - Updated for better positioning
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingHorizontal: THEME.spacing.base,
-    paddingTop: THEME.spacing.md,
-    paddingBottom: THEME.spacing.base,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   headerLeft: {
     flex: 1,
   },
+  logoGradient: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
   logo: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: THEME.colors.textPrimary,
-    letterSpacing: 2,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: THEME.colors.textSecondary,
-    lineHeight: 18,
+    color: '#FFFFFF',
+    letterSpacing: 4,
+    textShadowColor: 'rgba(91, 159, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
   },
   notificationButton: {
     position: 'relative',
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: THEME.colors.surface,
+    backgroundColor: 'rgba(91, 159, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(91, 159, 255, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#5B9FFF',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   notificationIcon: {
     fontSize: 20,
   },
   notificationDot: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 8,
+    right: 8,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: THEME.colors.primary,
+    backgroundColor: '#FF4D4D',
+    shadowColor: '#FF4D4D',
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 3,
   },
   profileButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: THEME.colors.surface,
+    overflow: 'hidden',
+    shadowColor: '#4FFFB0',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  profileGradient: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: THEME.colors.primary,
-    shadowColor: THEME.colors.primary,
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 5,
+    borderColor: 'rgba(79, 255, 176, 0.5)',
+    borderRadius: 22,
   },
   profileAvatar: {
     fontSize: 22,
   },
 
-  // Greeting with inline Streak Badge
-  greetingContainer: {
-    paddingHorizontal: THEME.spacing.base,
-    marginBottom: THEME.spacing.xl,
-  },
-  greetingRow: {
+  // Greeting Section
+  greetingSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
-  greetingText: {
+  greetingLeft: {
     flex: 1,
   },
   greeting: {
-    fontSize: THEME.fontSizes.base,
-    color: THEME.colors.textSecondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 4,
   },
   userName: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
     color: THEME.colors.textPrimary,
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(91, 159, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
-
-  // Streak Badge (next to name)
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 100, 50, 0.15)',
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    marginTop: 8,
+    borderColor: 'rgba(255, 100, 50, 0.4)',
+    gap: 8,
+    shadowColor: '#FF6435',
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
   },
   streakIcon: {
     fontSize: 24,
-    marginRight: 8,
-  },
-  streakInfo: {
-    marginRight: 8,
   },
   streakNumber: {
     fontSize: 20,
@@ -369,142 +422,123 @@ const styles = StyleSheet.create({
   },
   streakLabel: {
     fontSize: 10,
-    color: THEME.colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 12,
   },
-  streakArrow: {
-    fontSize: 20,
-    color: THEME.colors.textSecondary,
-  },
 
-  // Stats Circles
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: THEME.spacing.base,
-    marginBottom: THEME.spacing.xxl,
+  // Stats Circles - Horizontal Scroll
+  statsScroll: {
+    marginBottom: 20,
+  },
+  statsScrollContent: {
+    paddingHorizontal: 16,
+    gap: 20,
   },
   statItem: {
     alignItems: 'center',
   },
 
-  // Section Headers
+  // Section
+  section: {
+    marginBottom: 20,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: THEME.spacing.base,
-    marginBottom: THEME.spacing.base,
-    marginTop: THEME.spacing.lg,
+    paddingHorizontal: 16,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: THEME.fontSizes.lg,
+    fontSize: 18,
     fontWeight: 'bold',
     color: THEME.colors.textPrimary,
+    textShadowColor: 'rgba(91, 159, 255, 0.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   seeAll: {
-    fontSize: THEME.fontSizes.md,
-    color: THEME.colors.textSecondary,
+    fontSize: 14,
+    color: '#5B9FFF',
+    fontWeight: '600',
+    textShadowColor: 'rgba(91, 159, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
   },
 
-  // Friends List
-  friendsList: {
-    marginBottom: THEME.spacing.lg,
-  },
-  friendsListContent: {
-    paddingHorizontal: THEME.spacing.base,
+  // Horizontal Scroll Content
+  horizontalScrollContent: {
+    paddingHorizontal: 16,
+    gap: 12,
   },
 
   // Today's Challenge
-  todayChallengeContainer: {
+  todayChallenge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A1A',
-    marginHorizontal: THEME.spacing.base,
-    padding: 18,
-    borderRadius: 20,
-    marginBottom: THEME.spacing.base,
-    borderWidth: 1,
-    borderColor: 'rgba(79, 255, 176, 0.2)',
-    shadowColor: '#4FFFB0',
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  todayChallengeIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(79, 255, 176, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: THEME.spacing.md,
+    backgroundColor: 'rgba(26, 26, 26, 0.8)',
+    marginHorizontal: 16,
+    padding: 16,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(79, 255, 176, 0.3)',
+    shadowColor: '#4FFFB0',
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  challengeFireIcon: {
-    fontSize: 32,
+  challengeIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: 'rgba(79, 255, 176, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(79, 255, 176, 0.5)',
+    shadowColor: '#4FFFB0',
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  todayChallengeContent: {
+  challengeEmoji: {
+    fontSize: 28,
+  },
+  challengeInfo: {
     flex: 1,
   },
-  todayChallengeTitle: {
-    fontSize: THEME.fontSizes.lg,
+  challengeTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: THEME.colors.textPrimary,
     marginBottom: 4,
+    textShadowColor: 'rgba(91, 159, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
-  todayChallengeSubtitle: {
-    fontSize: THEME.fontSizes.sm,
-    color: THEME.colors.textSecondary,
+  challengeSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   startButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: THEME.colors.primary,
-    paddingHorizontal: THEME.spacing.lg,
-    paddingVertical: THEME.spacing.md,
-    borderRadius: THEME.borderRadius.md,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    shadowColor: '#4FFFB0',
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+    elevation: 8,
   },
   startButtonText: {
     color: THEME.colors.background,
-    fontSize: THEME.fontSizes.md,
+    fontSize: 15,
     fontWeight: 'bold',
-    marginRight: THEME.spacing.xs,
-  },
-  startButtonArrow: {
-    color: THEME.colors.background,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-
-  // Progress Dots
-  progressDots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: THEME.spacing.base,
-    marginBottom: THEME.spacing.base,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: THEME.colors.surfaceLight,
-    marginHorizontal: 3,
-  },
-  dotActive: {
-    backgroundColor: THEME.colors.primary,
-    width: 20,
-  },
-
-  // Upcoming Challenges
-  upcomingChallengesContent: {
-    paddingHorizontal: THEME.spacing.base,
   },
 
   // Bottom Spacing
   bottomSpacing: {
-    height: 100,
+    height: 20,
   },
 });

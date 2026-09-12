@@ -5,9 +5,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 
 export default function RewardsScreen({ navigation }) {
@@ -224,14 +225,19 @@ export default function RewardsScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={THEME.colors.background} />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.logo}>VYBE</Text>
-        <Text style={styles.headerTitle}>Rewards</Text>
-      </View>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#000000', '#0A0A1F', '#000000']}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+          
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.logo}>VYBE</Text>
+            <Text style={styles.headerTitle}>Rewards</Text>
+          </View>
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>
@@ -255,14 +261,21 @@ export default function RewardsScreen({ navigation }) {
       {activeTab === 'History' && renderHistory()}
 
       <View style={styles.bottomSpacing} />
-    </SafeAreaView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gradientBackground: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: THEME.colors.background,
   },
   header: {
     paddingHorizontal: 16,
@@ -275,6 +288,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     letterSpacing: 2,
     marginBottom: 4,
+    textShadowColor: 'rgba(91, 159, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   headerTitle: {
     fontSize: 28,

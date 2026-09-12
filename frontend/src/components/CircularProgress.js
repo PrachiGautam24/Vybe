@@ -114,22 +114,23 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   icon: {
-    fontSize: 24,
-    marginBottom: 4,
+    fontSize: 18,
+    marginBottom: 2,
   },
   value: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   maxValue: {
-    fontSize: 13,
+    fontSize: 10,
     color: '#A0A0A0',
-    marginTop: -2,
+    marginTop: -1,
   },
   label: {
     position: 'absolute',
-    bottom: -28,
-    fontSize: 13,
+    bottom: -22,
+    fontSize: 11,
     color: '#A0A0A0',
+    fontWeight: '500',
   },
 });

@@ -87,7 +87,7 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
               style={styles.menuItem}
               onPress={() => {
                 onClose();
-                // navigation.navigate('Streak'); // Will implement later
+                navigation.navigate('Streak');
               }}
             >
               <Text style={styles.menuIcon}>🛡️</Text>
@@ -96,7 +96,13 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
             </TouchableOpacity>
 
             {/* Difficulty */}
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                onClose();
+                navigation.navigate('Settings');
+              }}
+            >
               <Text style={styles.menuIcon}>🎯</Text>
               <Text style={styles.menuText}>Difficulty: Intermediate</Text>
               <Text style={styles.menuArrow}>›</Text>
@@ -119,7 +125,7 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
               style={styles.menuItem}
               onPress={() => {
                 onClose();
-                // navigation.navigate('Settings');
+                navigation.navigate('Settings');
               }}
             >
               <Text style={styles.menuIcon}>⚙️</Text>
@@ -132,7 +138,7 @@ export default function ProfileDrawer({ visible, onClose, navigation }) {
               style={[styles.menuItem, styles.logoutItem]}
               onPress={() => {
                 onClose();
-                // Handle logout
+                navigation.navigate('Login');
               }}
             >
               <Text style={styles.menuIcon}>🚪</Text>
