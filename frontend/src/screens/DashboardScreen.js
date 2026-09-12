@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Dimensions,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -169,16 +170,44 @@ export default function DashboardScreen({ navigation }) {
 
         {/* Community Run Card */}
         <View style={styles.section}>
-          <ChallengeCard
-            type="large"
-            badge="Community"
-            title="Run at Khan Market"
-            location="Khan Market, New Delhi"
-            time="Sat, 14 Sep • 6:30 AM"
-            participants="30 people"
-            buttonText="Join"
+          <TouchableOpacity 
+            style={styles.communityEventCard}
             onPress={() => navigation.navigate('Community', { tab: 'Events' })}
-          />
+          >
+            <ImageBackground
+              source={{ uri: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=800' }}
+              style={styles.communityEventBackground}
+              imageStyle={styles.communityEventImage}
+              blurRadius={8}
+            >
+              <LinearGradient
+                colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.85)']}
+                style={styles.communityEventGradient}
+              >
+                <View style={styles.communityBadge}>
+                  <Text style={styles.communityBadgeText}>🏃 Community Event</Text>
+                </View>
+                <Text style={styles.communityEventTitle}>Run at Khan Market</Text>
+                <Text style={styles.communityEventLocation}>📍 Khan Market, New Delhi</Text>
+                <Text style={styles.communityEventTime}>📅 Sat, 14 Sep • 6:30 AM</Text>
+                <View style={styles.communityEventFooter}>
+                  <View style={styles.participantsRow}>
+                    <View style={styles.participantAvatars}>
+                      {[1, 2, 3].map((i) => (
+                        <View key={i} style={[styles.participantAvatar, { left: (i - 1) * -10 }]}>
+                          <Text style={styles.participantAvatarText}>👤</Text>
+                        </View>
+                      ))}
+                    </View>
+                    <Text style={styles.participantsText}>+30 people joining</Text>
+                  </View>
+                  <View style={styles.joinButtonDashboard}>
+                    <Text style={styles.joinButtonTextDashboard}>Join Event</Text>
+                  </View>
+                </View>
+              </LinearGradient>
+            </ImageBackground>
+          </TouchableOpacity>
         </View>
 
         {/* Today's Challenge */}
@@ -211,7 +240,7 @@ export default function DashboardScreen({ navigation }) {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Upcoming Challenges</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Battles')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Battles', { tab: 'Upcoming' })}>
               <Text style={styles.seeAll}>See All ›</Text>
             </TouchableOpacity>
           </View>
@@ -225,19 +254,19 @@ export default function DashboardScreen({ navigation }) {
               title="Play 1 Hour"
               subtitle="Basketball"
               reward="+200 XP"
-              onPress={() => navigation.navigate('Battles')}
+              onPress={() => navigation.navigate('Battles', { tab: 'Upcoming' })}
             />
             <ChallengeCard
               icon="🚴"
               title="Cycle 15 km"
               reward="+300 XP"
-              onPress={() => navigation.navigate('Battles')}
+              onPress={() => navigation.navigate('Battles', { tab: 'Upcoming' })}
             />
             <ChallengeCard
               icon="🏊"
               title="Swim 500m"
               reward="+250 XP"
-              onPress={() => navigation.navigate('Battles')}
+              onPress={() => navigation.navigate('Battles', { tab: 'Upcoming' })}
             />
           </ScrollView>
         </View>
@@ -254,6 +283,7 @@ export default function DashboardScreen({ navigation }) {
             visible={profileVisible}
             onClose={() => setProfileVisible(false)}
             userData={userData}
+            navigation={navigation}
           />
         </SafeAreaView>
       </LinearGradient>
@@ -532,5 +562,117 @@ const styles = StyleSheet.create({
   // Bottom Spacing
   bottomSpacing: {
     height: 20,
+  },
+
+  // Community Event Card with Background Image
+  communityEventCard: {
+    marginHorizontal: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(91, 159, 255, 0.3)',
+    shadowColor: '#5B9FFF',
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  communityEventBackground: {
+    width: '100%',
+  },
+  communityEventImage: {
+    borderRadius: 20,
+  },
+  communityEventGradient: {
+    padding: 20,
+  },
+  communityBadge: {
+    backgroundColor: 'rgba(79, 255, 176, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(79, 255, 176, 0.4)',
+  },
+  communityBadgeText: {
+    color: '#4FFFB0',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  communityEventTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  communityEventLocation: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    marginBottom: 6,
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  communityEventTime: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    marginBottom: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  communityEventFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  participantsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  participantAvatars: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  participantAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#2A2A2A',
+    borderWidth: 2,
+    borderColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  participantAvatarText: {
+    fontSize: 14,
+  },
+  participantsText: {
+    fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '500',
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  joinButtonDashboard: {
+    backgroundColor: '#5B9FFF',
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 12,
+    shadowColor: '#5B9FFF',
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  joinButtonTextDashboard: {
+    color: '#000',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
 });

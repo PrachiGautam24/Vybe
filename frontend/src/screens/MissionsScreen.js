@@ -12,9 +12,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 import BottomNavBar from '../components/BottomNavBar';
 import VybeLogo from '../components/VybeLogo';
+import PremiumBadge from '../components/PremiumBadge';
+import PremiumLockOverlay from '../components/PremiumLockOverlay';
+import { usePremium } from '../context/PremiumContext';
 
 export default function MissionsScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Daily');
+  const { isPremium, openSubscriptionFlow } = usePremium();
   
   // State for mission statuses
   const [dailyMissions, setDailyMissions] = useState([
@@ -35,6 +39,7 @@ export default function MissionsScreen({ navigation }) {
       difficulty: 'Medium',
       status: 'not-started',
       timeLeft: '8h',
+      isPremium: true,
     },
     {
       id: 3,
@@ -55,6 +60,7 @@ export default function MissionsScreen({ navigation }) {
       status: 'in-progress',
       progress: 45,
       timeLeft: '5d',
+      isPremium: true,
     },
     {
       id: 2,
@@ -64,6 +70,7 @@ export default function MissionsScreen({ navigation }) {
       difficulty: 'Hard',
       status: 'not-started',
       timeLeft: '5d',
+      isPremium: true,
     },
     {
       id: 3,
@@ -73,6 +80,7 @@ export default function MissionsScreen({ navigation }) {
       status: 'in-progress',
       progress: 30,
       timeLeft: '5d',
+      isPremium: true,
     },
     {
       id: 4,
@@ -117,13 +125,14 @@ export default function MissionsScreen({ navigation }) {
     },
   ]);
 
-  const recommendedMissions = [
+  const [recommendedMissions, setRecommendedMissions] = useState([
     {
       id: 1,
       title: 'Walk 5 km',
       xp: 250,
       icon: '🔥',
       subtitle: 'Based on your activity',
+      status: 'not-started',
     },
     {
       id: 2,
@@ -131,8 +140,9 @@ export default function MissionsScreen({ navigation }) {
       xp: 150,
       icon: '🧘',
       subtitle: 'Perfect for recovery',
+      status: 'not-started',
     },
-  ];
+  ]);
 
   // Handler functions for mission status changes
   const handleDailyMissionToggle = (missionId) => {
@@ -169,6 +179,19 @@ export default function MissionsScreen({ navigation }) {
           status: mission.status === 'joined' ? 'not-joined' : 'joined',
           friendsJoined: mission.status === 'joined' ? mission.friendsJoined - 1 : mission.friendsJoined + 1
         };
+      }
+      return mission;
+    }));
+  };
+
+  const handleRecommendedMissionToggle = (missionId) => {
+    setRecommendedMissions(recommendedMissions.map(mission => {
+      if (mission.id === missionId) {
+        if (mission.status === 'not-started') {
+          return { ...mission, status: 'in-progress' };
+        } else if (mission.status === 'in-progress') {
+          return { ...mission, status: 'completed', earnedXp: mission.xp };
+        }
       }
       return mission;
     }));
@@ -246,8 +269,20 @@ export default function MissionsScreen({ navigation }) {
         {/* Daily Missions */}
         {activeTab === 'Daily' && (
           <View style={styles.missionsContainer}>
-            {dailyMissions.map((mission) => (
-              <View key={mission.id} style={styles.missionCard}>
+            {dailyMissions.map((mission) => {
+              const isLocked = mission.isPremium && !isPremium;
+              return (
+              <View key={mission.id} style={[
+                styles.missionCard,
+                mission.isPremium && styles.missionCardPremium
+              ]}>
+                {/* Premium badge indicator */}
+                {mission.isPremium && (
+                  <View style={styles.missionPremiumBadge}>
+                    <Text style={styles.goldCrownIcon}>👑</Text>
+                  </View>
+                )}
+
                 <View style={styles.missionLeft}>
                   <View style={[
                     styles.missionIcon,
@@ -282,23 +317,47 @@ export default function MissionsScreen({ navigation }) {
                   ) : (
                     <TouchableOpacity 
                       style={styles.startButton}
-                      onPress={() => handleDailyMissionToggle(mission.id)}
+                      onPress={() => !isLocked && handleDailyMissionToggle(mission.id)}
+                      disabled={isLocked}
                     >
-                      <Text style={styles.startButtonText}>Start</Text>
-                      <Text style={styles.notStartedText}>Not Started • {mission.timeLeft}</Text>
+                      <Text style={styles.startButtonText}>{isLocked ? 'Premium' : 'Start'}</Text>
+                      <Text style={styles.notStartedText}>
+                        {isLocked ? 'Premium Only' : `Not Started • ${mission.timeLeft}`}
+                      </Text>
                     </TouchableOpacity>
                   )}
                 </View>
+
+                {/* Premium lock overlay */}
+                {isLocked && (
+                  <PremiumLockOverlay 
+                    onPress={openSubscriptionFlow}
+                    message="Premium Required"
+                    showButton={true}
+                  />
+                )}
               </View>
-            ))}
+            )})}
           </View>
         )}
 
         {/* Weekly Missions */}
         {activeTab === 'Weekly' && (
           <View style={styles.missionsContainer}>
-            {weeklyMissions.map((mission) => (
-              <View key={mission.id} style={styles.missionCard}>
+            {weeklyMissions.map((mission) => {
+              const isLocked = mission.isPremium && !isPremium;
+              return (
+              <View key={mission.id} style={[
+                styles.missionCard,
+                mission.isPremium && styles.missionCardPremium
+              ]}>
+                {/* Premium badge indicator */}
+                {mission.isPremium && (
+                  <View style={styles.missionPremiumBadge}>
+                    <Text style={styles.goldCrownIcon}>👑</Text>
+                  </View>
+                )}
+
                 <View style={styles.missionLeft}>
                   <View style={[
                     styles.missionIcon,
@@ -333,15 +392,27 @@ export default function MissionsScreen({ navigation }) {
                   ) : (
                     <TouchableOpacity 
                       style={styles.startButton}
-                      onPress={() => handleWeeklyMissionToggle(mission.id)}
+                      onPress={() => !isLocked && handleWeeklyMissionToggle(mission.id)}
+                      disabled={isLocked}
                     >
-                      <Text style={styles.startButtonText}>Start</Text>
-                      <Text style={styles.notStartedText}>Not Started • {mission.timeLeft}</Text>
+                      <Text style={styles.startButtonText}>{isLocked ? 'Premium' : 'Start'}</Text>
+                      <Text style={styles.notStartedText}>
+                        {isLocked ? 'Premium Only' : `Not Started • ${mission.timeLeft}`}
+                      </Text>
                     </TouchableOpacity>
                   )}
                 </View>
+
+                {/* Premium lock overlay */}
+                {isLocked && (
+                  <PremiumLockOverlay 
+                    onPress={openSubscriptionFlow}
+                    message="Premium Required"
+                    showButton={true}
+                  />
+                )}
               </View>
-            ))}
+            )})}
           </View>
         )}
 
@@ -402,9 +473,26 @@ export default function MissionsScreen({ navigation }) {
               <Text style={styles.recommendedTitle}>{mission.title}</Text>
               <Text style={styles.recommendedSubtitle}>{mission.subtitle} • +{mission.xp} XP</Text>
             </View>
-            <TouchableOpacity style={styles.recommendedButton}>
-              <Text style={styles.recommendedButtonText}>Start</Text>
-            </TouchableOpacity>
+            {mission.status === 'completed' ? (
+              <View style={styles.recommendedCompletedBadge}>
+                <Text style={styles.recommendedCompletedText}>✓</Text>
+              </View>
+            ) : (
+              <TouchableOpacity 
+                style={[
+                  styles.recommendedButton,
+                  mission.status === 'in-progress' && styles.recommendedButtonInProgress
+                ]}
+                onPress={() => handleRecommendedMissionToggle(mission.id)}
+              >
+                <Text style={[
+                  styles.recommendedButtonText,
+                  mission.status === 'in-progress' && styles.recommendedButtonTextInProgress
+                ]}>
+                  {mission.status === 'in-progress' ? 'End' : 'Start'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
 
@@ -799,6 +887,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  recommendedButtonInProgress: {
+    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+    borderColor: 'rgba(255, 107, 107, 0.3)',
+  },
+  recommendedButtonTextInProgress: {
+    color: '#FF6B6B',
+  },
+  recommendedCompletedBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(79, 255, 176, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(79, 255, 176, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recommendedCompletedText: {
+    fontSize: 20,
+    color: '#4FFFB0',
+  },
   progressDots: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -819,6 +928,26 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 20,
+  },
+
+  // Premium styles
+  missionCardPremium: {
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+    shadowColor: '#FFD700',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  missionPremiumBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  goldCrownIcon: {
+    fontSize: 20,
+    textShadowColor: 'rgba(255, 215, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
 });
 

@@ -6,44 +6,50 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { THEME } from '../constants/theme';
 import BottomNavBar from '../components/BottomNavBar';
 import VybeLogo from '../components/VybeLogo';
+import PremiumBadge from '../components/PremiumBadge';
+import PremiumButton from '../components/PremiumButton';
+import PremiumLockOverlay from '../components/PremiumLockOverlay';
+import { usePremium } from '../context/PremiumContext';
 
-export default function RewardsScreen({ navigation }) {
-  const [activeTab, setActiveTab] = useState('Badges');
+export default function RewardsScreen({ navigation, route }) {
+  const [activeTab, setActiveTab] = useState(route.params?.tab || 'Badges');
   const [storeCategory, setStoreCategory] = useState('All');
+  const { isPremium, openSubscriptionFlow, showPremiumModal, closeSubscriptionFlow, activatePremium, deactivatePremium } = usePremium();
   
   // Dual currency system
   const userXP = 12450; // Non-spendable, for badges
   const userPoints = 850; // Spendable, for store items
 
-  // Badges with XP thresholds
+  // Badges with XP thresholds (some marked as premium)
   const badges = [
     { id: 1, name: 'Fire Starter', icon: '🔥', xpRequired: 500, currentXP: 12450, unlocked: true, description: '7-day streak', unlockedDate: 'Jan 15, 2026' },
     { id: 2, name: 'Marathon King', icon: '👑', xpRequired: 1000, currentXP: 12450, unlocked: true, description: 'Completed 10 runs', unlockedDate: 'Jan 18, 2026' },
     { id: 3, name: 'Early Bird', icon: '🌅', xpRequired: 300, currentXP: 12450, unlocked: true, description: '10 morning workouts', unlockedDate: 'Jan 10, 2026' },
-    { id: 4, name: 'Night Owl', icon: '🦉', xpRequired: 15000, currentXP: 12450, unlocked: false, description: '5 late workouts' },
+    { id: 4, name: 'Night Owl', icon: '🦉', xpRequired: 15000, currentXP: 12450, unlocked: false, description: '5 late workouts', isPremium: true },
     { id: 5, name: 'Social Butterfly', icon: '🦋', xpRequired: 400, currentXP: 12450, unlocked: true, description: 'Join 20 events', unlockedDate: 'Jan 12, 2026' },
-    { id: 6, name: 'Champion', icon: '🏆', xpRequired: 20000, currentXP: 12450, unlocked: false, description: 'Win 5 battles' },
+    { id: 6, name: 'Champion', icon: '🏆', xpRequired: 20000, currentXP: 12450, unlocked: false, description: 'Win 5 battles', isPremium: true },
     { id: 7, name: 'Consistency Master', icon: '⭐', xpRequired: 25000, currentXP: 12450, unlocked: false, description: '30-day streak' },
-    { id: 8, name: 'Distance Crusher', icon: '🚀', xpRequired: 18000, currentXP: 12450, unlocked: false, description: 'Run 100 km total' },
+    { id: 8, name: 'Distance Crusher', icon: '🚀', xpRequired: 18000, currentXP: 12450, unlocked: false, description: 'Run 100 km total', isPremium: true },
   ];
 
-  // Store Items - cost in Points (spendable)
+  // Store Items - cost in Points (spendable, some marked as premium)
   const storeItems = [
     { id: 1, name: '₹100 Amazon Voucher', icon: '🛍️', pointsCost: 200, description: 'Amazon gift card', category: 'Amazon' },
     { id: 2, name: '₹200 Amazon Voucher', icon: '🛒', pointsCost: 380, description: 'Amazon gift card', category: 'Amazon' },
-    { id: 3, name: '₹500 Amazon Voucher', icon: '🎁', pointsCost: 900, description: 'Amazon gift card', category: 'Amazon' },
+    { id: 3, name: '₹500 Amazon Voucher', icon: '🎁', pointsCost: 900, description: 'Amazon gift card', category: 'Amazon', isPremium: true },
     { id: 4, name: '₹50 Blinkit Credit', icon: '🥬', pointsCost: 100, description: 'Grocery delivery', category: 'Blinkit' },
     { id: 5, name: '₹100 Blinkit Credit', icon: '🛵', pointsCost: 190, description: 'Grocery delivery', category: 'Blinkit' },
-    { id: 6, name: '₹200 Blinkit Credit', icon: '🥗', pointsCost: 360, description: 'Grocery delivery', category: 'Blinkit' },
+    { id: 6, name: '₹200 Blinkit Credit', icon: '🥗', pointsCost: 360, description: 'Grocery delivery', category: 'Blinkit', isPremium: true },
     { id: 7, name: 'Gym Day Pass', icon: '🏋️', pointsCost: 150, description: '1-day gym access', category: 'Fitness' },
     { id: 8, name: 'Protein Shake', icon: '🥤', pointsCost: 80, description: 'Post-workout shake', category: 'Food' },
-    { id: 9, name: 'Yoga Mat', icon: '🧘', pointsCost: 450, description: 'Professional yoga mat', category: 'Gear' },
+    { id: 9, name: 'Yoga Mat', icon: '🧘', pointsCost: 450, description: 'Professional yoga mat', category: 'Gear', isPremium: true },
     { id: 10, name: 'Water Bottle', icon: '💧', pointsCost: 120, description: 'Insulated bottle', category: 'Gear' },
   ];
 
@@ -90,12 +96,24 @@ export default function RewardsScreen({ navigation }) {
         <View style={styles.badgesGrid}>
           {badges.map((badge) => {
             const progress = badge.unlocked ? 100 : Math.min((badge.currentXP / badge.xpRequired) * 100, 100);
+            const isLocked = badge.isPremium && !isPremium && !badge.unlocked;
             
             return (
               <TouchableOpacity 
                 key={badge.id} 
-                style={[styles.badgeCard, !badge.unlocked && styles.badgeCardLocked]}
+                style={[
+                  styles.badgeCard, 
+                  !badge.unlocked && styles.badgeCardLocked,
+                  badge.isPremium && styles.badgeCardPremium
+                ]}
               >
+                {/* Premium badge indicator */}
+                {badge.isPremium && (
+                  <View style={styles.premiumBadgeIndicator}>
+                    <PremiumBadge size="small" />
+                  </View>
+                )}
+
                 <View style={[styles.badgeIconContainer, !badge.unlocked && styles.badgeIconLocked]}>
                   <Text style={styles.badgeIcon}>{badge.icon}</Text>
                 </View>
@@ -118,10 +136,19 @@ export default function RewardsScreen({ navigation }) {
                   <Text style={styles.badgeUnlockedDate}>Unlocked: {badge.unlockedDate}</Text>
                 )}
                 
-                {!badge.unlocked && (
+                {!badge.unlocked && !isLocked && (
                   <View style={styles.lockedOverlay}>
                     <Text style={styles.lockIcon}>🔒</Text>
                   </View>
+                )}
+                
+                {/* Premium lock overlay */}
+                {isLocked && (
+                  <PremiumLockOverlay 
+                    onPress={openSubscriptionFlow}
+                    message="Premium Required"
+                    showButton={true}
+                  />
                 )}
               </TouchableOpacity>
             );
@@ -194,8 +221,20 @@ export default function RewardsScreen({ navigation }) {
         <View style={styles.storeGrid}>
           {filteredItems.map((item) => {
             const canAfford = userPoints >= item.pointsCost;
+            const isLocked = item.isPremium && !isPremium;
             return (
-              <View key={item.id} style={[styles.storeItemCard, !canAfford && styles.storeItemCardDisabled]}>
+              <View key={item.id} style={[
+                styles.storeItemCard, 
+                !canAfford && styles.storeItemCardDisabled,
+                item.isPremium && styles.storeItemCardPremium
+              ]}>
+                {/* Premium badge indicator */}
+                {item.isPremium && (
+                  <View style={styles.storePremiumIndicator}>
+                    <Text style={styles.goldLockIcon}>🔒</Text>
+                  </View>
+                )}
+
                 <View style={[styles.storeItemIconContainer, !canAfford && styles.storeItemIconDisabled]}>
                   <Text style={styles.storeItemIcon}>{item.icon}</Text>
                 </View>
@@ -210,21 +249,30 @@ export default function RewardsScreen({ navigation }) {
                     </Text>
                   </View>
                   <TouchableOpacity 
-                    style={[styles.redeemButton, !canAfford && styles.redeemButtonDisabled]}
-                    disabled={!canAfford}
+                    style={[styles.redeemButton, (!canAfford || isLocked) && styles.redeemButtonDisabled]}
+                    disabled={!canAfford || isLocked}
+                    onPress={() => isLocked && openSubscriptionFlow()}
                   >
-                    <Text style={[styles.redeemButtonText, !canAfford && styles.redeemButtonTextDisabled]}>
-                      {canAfford ? 'Redeem' : 'Locked'}
+                    <Text style={[styles.redeemButtonText, (!canAfford || isLocked) && styles.redeemButtonTextDisabled]}>
+                      {isLocked ? 'Premium' : canAfford ? 'Redeem' : 'Locked'}
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {!canAfford && (
+                {!canAfford && !isLocked && (
                   <View style={styles.storeLockedOverlay}>
                     <Text style={styles.storeLockIcon}>🔒</Text>
                     <Text style={styles.storeLockText}>
                       Need {item.pointsCost - userPoints} more
                     </Text>
                   </View>
+                )}
+                {/* Premium lock overlay */}
+                {isLocked && (
+                  <PremiumLockOverlay 
+                    onPress={openSubscriptionFlow}
+                    message="Unlock with Premium"
+                    showButton={true}
+                  />
                 )}
               </View>
             );
@@ -314,6 +362,57 @@ export default function RewardsScreen({ navigation }) {
             <Text style={styles.headerTitle}>Rewards</Text>
           </View>
 
+          {/* Unlock Premium Button */}
+          {!isPremium && (
+            <View style={styles.unlockPremiumContainer}>
+              <TouchableOpacity 
+                style={styles.unlockPremiumButton}
+                onPress={openSubscriptionFlow}
+              >
+                <LinearGradient
+                  colors={['#FFD700', '#FFA500', '#FFD700']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.premiumButtonGradient}
+                >
+                  <View style={styles.unlockPremiumLeft}>
+                    <Text style={styles.crownIconBig}>👑</Text>
+                    <View style={styles.unlockPremiumTextContainer}>
+                      <Text style={styles.unlockPremiumTitle}>Unlock Premium</Text>
+                      <Text style={styles.unlockPremiumSubtitle}>
+                        Get 2× rewards, exclusive badges & more!
+                      </Text>
+                      <Text style={styles.unlockPremiumPrice}>Starting at ₹144/month</Text>
+                    </View>
+                  </View>
+                  <View style={styles.unlockPremiumRight}>
+                    <View style={styles.viewPlansButton}>
+                      <Text style={styles.viewPlansButtonText}>View Plans</Text>
+                    </View>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Premium Active Badge */}
+          {isPremium && (
+            <TouchableOpacity 
+              style={styles.premiumActiveCard}
+              onPress={deactivatePremium}
+              onLongPress={openSubscriptionFlow}
+            >
+              <Text style={styles.premiumActiveIcon}>👑</Text>
+              <View style={styles.premiumActiveContent}>
+                <Text style={styles.premiumActiveTitle}>Premium Active</Text>
+                <Text style={styles.premiumActiveSubtitle}>
+                  Enjoying 2× rewards & exclusive perks!
+                </Text>
+                <Text style={styles.premiumActiveTapHint}>Tap to deactivate (testing)</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         {['Badges', 'Store', 'History'].map((tab) => (
@@ -337,6 +436,189 @@ export default function RewardsScreen({ navigation }) {
 
       <View style={styles.bottomSpacing} />
         </SafeAreaView>
+
+      {/* Premium Subscription Modal */}
+      <Modal
+        visible={showPremiumModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeSubscriptionFlow}
+      >
+        <View style={styles.premiumModalOverlay}>
+          <View style={styles.premiumModalContent}>
+            <LinearGradient
+              colors={['#1A1A2E', '#0A0A1F']}
+              style={styles.premiumModalGradient}
+            >
+              {/* Close Button */}
+              <TouchableOpacity 
+                style={styles.premiumCloseButton}
+                onPress={closeSubscriptionFlow}
+              >
+                <Text style={styles.premiumCloseText}>✕</Text>
+              </TouchableOpacity>
+
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Premium Header */}
+                <View style={styles.premiumModalHeader}>
+                  <Text style={styles.premiumModalCrown}>👑</Text>
+                  <Text style={styles.premiumModalTitle}>Unlock Premium</Text>
+                  <Text style={styles.premiumModalSubtitle}>
+                    Get exclusive features and maximize your rewards
+                  </Text>
+                </View>
+
+                {/* Premium Benefits */}
+                <View style={styles.benefitsContainer}>
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>⚡</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>2× XP & Points</Text>
+                      <Text style={styles.benefitDescription}>
+                        Earn double rewards on all activities and missions
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>🏆</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>Exclusive Badges</Text>
+                      <Text style={styles.benefitDescription}>
+                        Unlock premium badges and achievements
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>🎁</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>Premium Store Items</Text>
+                      <Text style={styles.benefitDescription}>
+                        Access exclusive rewards and higher value vouchers
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>🎮</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>Priority in Ground Play</Text>
+                      <Text style={styles.benefitDescription}>
+                        Gold highlighting & double contributions in battles
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>🚀</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>Premium Tournaments</Text>
+                      <Text style={styles.benefitDescription}>
+                        Join exclusive high-stakes competitions
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.benefitItem}>
+                    <Text style={styles.benefitIcon}>💎</Text>
+                    <View style={styles.benefitContent}>
+                      <Text style={styles.benefitTitle}>Ad-Free Experience</Text>
+                      <Text style={styles.benefitDescription}>
+                        Enjoy uninterrupted fitness journey
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Pricing Plans */}
+                <View style={styles.pricingContainer}>
+                  <Text style={styles.pricingTitle}>Choose Your Plan</Text>
+
+                  {/* Monthly Plan */}
+                  <View style={styles.pricingCard}>
+                    <View style={styles.pricingHeader}>
+                      <View style={styles.pricingInfoColumn}>
+                        <Text style={styles.pricingName}>Monthly</Text>
+                        <Text style={styles.pricingDescription}>Billed monthly</Text>
+                      </View>
+                      <View style={styles.pricingPriceContainer}>
+                        <Text style={styles.pricingPrice}>₹144</Text>
+                        <Text style={styles.pricingPeriod}>/month</Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity 
+                      style={styles.planPayButton}
+                      onPress={activatePremium}
+                    >
+                      <Text style={styles.planPayButtonText}>Pay ₹144</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Quarterly Plan - Most Popular */}
+                  <View style={[styles.pricingCard, styles.pricingCardPopular]}>
+                    <View style={styles.popularBadge}>
+                      <Text style={styles.popularBadgeText}>MOST POPULAR</Text>
+                    </View>
+                    <View style={styles.pricingHeader}>
+                      <View style={styles.pricingInfoColumn}>
+                        <Text style={styles.pricingName}>Quarterly</Text>
+                        <Text style={styles.pricingDescription}>Save 17%</Text>
+                      </View>
+                      <View style={styles.pricingPriceContainer}>
+                        <Text style={styles.pricingPriceOld}>₹432</Text>
+                        <Text style={styles.pricingPrice}>₹359</Text>
+                        <Text style={styles.pricingPeriod}>/3 months</Text>
+                      </View>
+                    </View>
+                    <View style={styles.savingsBadge}>
+                      <Text style={styles.savingsBadgeText}>💰 Save ₹73</Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.planPayButton, styles.planPayButtonPopular]}
+                      onPress={activatePremium}
+                    >
+                      <Text style={styles.planPayButtonText}>Pay ₹359</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Yearly Plan - Best Value */}
+                  <View style={[styles.pricingCard, styles.pricingCardBest]}>
+                    <View style={styles.bestValueBadge}>
+                      <Text style={styles.bestValueBadgeText}>⭐ BEST VALUE</Text>
+                    </View>
+                    <View style={styles.pricingHeader}>
+                      <View style={styles.pricingInfoColumn}>
+                        <Text style={styles.pricingName}>Yearly</Text>
+                        <Text style={styles.pricingDescription}>Save 40%</Text>
+                      </View>
+                      <View style={styles.pricingPriceContainer}>
+                        <Text style={styles.pricingPriceOld}>₹1,728</Text>
+                        <Text style={styles.pricingPrice}>₹1,039</Text>
+                        <Text style={styles.pricingPeriod}>/year</Text>
+                      </View>
+                    </View>
+                    <View style={styles.savingsBadge}>
+                      <Text style={styles.savingsBadgeText}>💎 Save ₹689 • Only ₹87/month</Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.planPayButton, styles.planPayButtonBest]}
+                      onPress={activatePremium}
+                    >
+                      <Text style={styles.planPayButtonText}>Pay ₹1,039</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Terms */}
+                <Text style={styles.termsText}>
+                  By subscribing, you agree to auto-renewal. Cancel anytime from settings.
+                </Text>
+              </ScrollView>
+            </LinearGradient>
+          </View>
+        </View>
+      </Modal>
 
       {/* Bottom Navigation */}
       <BottomNavBar navigation={navigation} activeTab="Rewards" />
@@ -899,6 +1181,379 @@ const styles = StyleSheet.create({
 
   bottomSpacing: {
     height: 80,
+  },
+
+  // Premium styles
+  badgeCardPremium: {
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+    shadowColor: '#FFD700',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  premiumBadgeIndicator: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  storeItemCardPremium: {
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+    shadowColor: '#FFD700',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  storePremiumIndicator: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  goldLockIcon: {
+    fontSize: 18,
+    textShadowColor: 'rgba(255, 215, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  },
+
+  // Unlock Premium Button
+  unlockPremiumContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  unlockPremiumButton: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 6,
+    shadowColor: '#FFD700',
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+  },
+  premiumButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    minHeight: 120,
+  },
+  unlockPremiumLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  crownIconBig: {
+    fontSize: 48,
+    marginRight: 16,
+  },
+  unlockPremiumTextContainer: {
+    flex: 1,
+  },
+  unlockPremiumTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 4,
+  },
+  unlockPremiumSubtitle: {
+    fontSize: 13,
+    color: '#000',
+    opacity: 0.8,
+    marginBottom: 6,
+  },
+  unlockPremiumPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+    opacity: 0.9,
+  },
+  unlockPremiumRight: {
+    marginLeft: 12,
+  },
+  viewPlansButton: {
+    backgroundColor: '#000',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  viewPlansButtonText: {
+    color: '#FFD700',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  unlockPremiumArrow: {
+    fontSize: 28,
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  
+  // Premium Active Card
+  premiumActiveCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 215, 0, 0.15)',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+    minHeight: 120,
+  },
+  premiumActiveIcon: {
+    fontSize: 48,
+    marginRight: 16,
+  },
+  premiumActiveContent: {
+    flex: 1,
+  },
+  premiumActiveTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFD700',
+    marginBottom: 4,
+  },
+  premiumActiveSubtitle: {
+    fontSize: 13,
+    color: '#A0A0A0',
+    marginBottom: 6,
+  },
+  premiumActiveTapHint: {
+    fontSize: 10,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+
+  // Premium Modal
+  premiumModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  premiumModalContent: {
+    width: '100%',
+    maxWidth: 430,
+    maxHeight: '85%',
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+  premiumModalGradient: {
+    paddingTop: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    maxHeight: '100%',
+  },
+  premiumCloseButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  premiumCloseText: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  premiumModalHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  premiumModalCrown: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  premiumModalTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFD700',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  premiumModalSubtitle: {
+    fontSize: 14,
+    color: '#A0A0A0',
+    textAlign: 'center',
+  },
+  benefitsContainer: {
+    marginBottom: 20,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 14,
+  },
+  benefitIcon: {
+    fontSize: 28,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  benefitContent: {
+    flex: 1,
+  },
+  benefitTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  benefitDescription: {
+    fontSize: 13,
+    color: '#A0A0A0',
+    lineHeight: 18,
+  },
+  pricingContainer: {
+    marginBottom: 16,
+  },
+  pricingTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  pricingCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  pricingCardPopular: {
+    borderColor: '#5B9FFF',
+    borderWidth: 2,
+    backgroundColor: 'rgba(91, 159, 255, 0.1)',
+  },
+  pricingCardBest: {
+    borderColor: '#FFD700',
+    borderWidth: 2,
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+  },
+  popularBadge: {
+    position: 'absolute',
+    top: -10,
+    alignSelf: 'center',
+    backgroundColor: '#5B9FFF',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  popularBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+    letterSpacing: 1,
+  },
+  bestValueBadge: {
+    position: 'absolute',
+    top: -10,
+    alignSelf: 'center',
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  bestValueBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+    letterSpacing: 1,
+  },
+  pricingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  pricingInfoColumn: {
+    flex: 1,
+  },
+  pricingName: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 3,
+  },
+  pricingDescription: {
+    fontSize: 12,
+    color: '#10B981',
+  },
+  pricingPriceContainer: {
+    alignItems: 'flex-end',
+  },
+  pricingPriceOld: {
+    fontSize: 13,
+    color: '#666',
+    textDecorationLine: 'line-through',
+    marginBottom: 2,
+  },
+  pricingPrice: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  pricingPeriod: {
+    fontSize: 12,
+    color: '#A0A0A0',
+  },
+  savingsBadge: {
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  savingsBadgeText: {
+    fontSize: 12,
+    color: '#10B981',
+    fontWeight: '600',
+  },
+  planPayButton: {
+    backgroundColor: '#5B9FFF',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  planPayButtonPopular: {
+    backgroundColor: '#5B9FFF',
+  },
+  planPayButtonBest: {
+    backgroundColor: '#FFD700',
+  },
+  planPayButtonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#000',
+    letterSpacing: 0.5,
+  },
+  subscribeButton: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  subscribeButtonGradient: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  subscribeButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    letterSpacing: 0.5,
+  },
+  termsText: {
+    fontSize: 10,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 14,
+    marginTop: 12,
+    paddingHorizontal: 20,
   },
 });
 
